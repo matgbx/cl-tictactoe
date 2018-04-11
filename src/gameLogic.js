@@ -1,3 +1,5 @@
+const prompt = require('prompt');
+
 class TicTacToe {
   constructor() {
     this.board = this.createBoard();
@@ -37,9 +39,18 @@ class TicTacToe {
       console.log('That spot is already taken! Try another');
     }
   }
+
+  checkForWin() {
+
+  }
 }
 
-const game = new TicTacToe();
-game.handleTurn(3);
-game.handleTurn(4);
-game.handleTurn(4);
+prompt.start();
+
+prompt.get(['want to play TicTacToe? Y/N'], (err, result) => {
+  if (result['want to play TicTacToe? Y/N'] === 'Y' || result['want to play TicTacToe? Y/N'] === 'y') {
+    const game = new TicTacToe;
+  } else {
+    console.log('Have a nice day!');
+  }
+})
