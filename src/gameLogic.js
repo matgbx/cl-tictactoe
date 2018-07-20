@@ -1,56 +1,94 @@
 const prompt = require('prompt');
 
-class TicTacToe {
-  constructor() {
-    this.board = this.createBoard();
-    this.turnX = true;
-    this.cells = {
-      1: [0,0],
-      2: [0,1],
-      3: [0,2],
-      4: [1,0],
-      5: [1,1],
-      6: [1,2],
-      7: [2,0],
-      8: [2,1],
-      9: [2,2],
+const mainBoard = {
+  1: ' ',
+  2: ' ',
+  3: ' ',
+  4: ' ',
+  5: ' ',
+  6: ' ',
+  7: ' ',
+  8: ' ',
+  9: ' ',
+};
+
+const gameData = {
+  'nameX': '',
+  'nameO': '',
+  'turn': 'X',
+};
+
+const winCombos = [ [1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6 ,9], [1, 5, 9], [3, 5, 7]];
+
+const checkWin = (player) => {
+  const board = mainBoard;
+  for(var i = 0; i < winCombos.length; i++) {
+    const cellOne = board[winCombos[i][0]];
+    const cellTwo = board[winCombos[i][1]];
+    const cellThree = board[winCombos[i][2]];
+    if (cellOne === player && cellTwo === player && cellThree === player) {
+      return true;
     }
   }
-
-  createBoard() {
-    const board = [];
-    for (var i = 0; i < 3; i++) {
-      board.push(Array(3).fill(" "));
-    }
-    console.log(board);
-    return board;
-  }
-
-  handleTurn(num) {
-    const coors = this.cells[num];
-    let chosenCell = this.board[coors[0]][coors[1]];
-    const player = this.turnX ? 'X' : 'O'
-
-    if (this.board[coors[0]][coors[1]] === ' ') {
-      this.board[coors[0]][coors[1]] = player;
-      this.turnX = !this.turnX;
-      console.log(this.board);
-    } else {
-      console.log('That spot is already taken! Try another');
-    }
-  }
-
-  checkForWin() {
-
-  }
+  return false;
 }
 
-prompt.start();
-
-prompt.get(['want to play TicTacToe? Y/N'], (err, result) => {
-  if (result['want to play TicTacToe? Y/N'] === 'Y' || result['want to play TicTacToe? Y/N'] === 'y') {
-    const game = new TicTacToe;
-  } else {
-    console.log('Have a nice day!');
+const generateBoard = (type) => {
+  let board = mainBoard;
+  if (type) {
+    board = guideBoard();
   }
-})
+  const currBoard = [
+    `\n ${board[1]} | ${board[2]} | ${board[3]}\n ---------\n`,
+    ` ${board[4]} | ${board[5]} | ${board[6]}\n ---------\n`,
+    ` ${board[7]} | ${board[8]} | ${board[9]}\n`
+  ];
+  console.log(currBoard.join(''));
+};
+
+const guideBoard = () => {
+  const guide = {};
+  for (let key in mainBoard) {
+    guide[key] = key;
+  }
+  return guide;
+};
+
+const playerTurn = (player) => {
+  const board = mainBoard;
+  let name = player === 'X' ? gameData.nameX : gameData.nameO;
+  console.log(`${name}, it's your turn. Choose a position (e.g. 1 or 2 ...9)`);
+  prompt.get(['position'], (err, res) => {
+    const cellRef = res['position'];
+    if (board[cellRef] === ' ') {
+      board[cellRef] = player;
+      if (checkWin(player)) {
+        generateBoard();
+        console.log(`Winner Winner! Congrats\n`)
+      } else {
+        gameData.turn = gameData.turn === 'X' ? 'O' : 'X';
+        generateBoard();
+        playerTurn(gameData.turn);
+      }
+    } else {
+      console.log('Invalid position... try again');
+      generateBoard();
+      playerTurn(gameData.turn);
+    }
+  });
+};
+
+const runGame = () => {
+  prompt.start();
+  prompt.get(['Player X name: ', 'Player O name: '], (err, res) => {
+    gameData.nameX = res['Player X name: '];
+    gameData.nameO = res['Player O name: '];
+    console.log('\nLet\'s play!\n');
+    console.log('\nHere is the guide board: \n\n\n')
+    generateBoard('guide');
+    playerTurn(gameData.turn);
+    // guideBoard();
+  })
+}
+
+runGame();
