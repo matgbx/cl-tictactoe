@@ -16,6 +16,7 @@ const gameData = {
   'nameX': '',
   'nameO': '',
   'turn': 'X',
+  'count': 0,
 };
 
 const winCombos = [ [1, 2, 3], [4, 5, 6], [7, 8, 9], [1, 4, 7], [2, 5, 8], [3, 6 ,9], [1, 5, 9], [3, 5, 7]];
@@ -62,9 +63,13 @@ const playerTurn = (player) => {
     const cellRef = res['position'];
     if (board[cellRef] === ' ') {
       board[cellRef] = player;
+      gameData.count++;
       if (checkWin(player)) {
         generateBoard();
-        console.log(`Winner Winner! Congrats\n`)
+        console.log(`**** WINNER WINNER, CHICKEN DINNER! Congrats ****\n`)
+      } else if (!checkWin(player) && gameData.count === 9) {
+          generateBoard();
+          console.log('**** Tie game! Run the program again to start a new game. ****\n\n');
       } else {
         gameData.turn = gameData.turn === 'X' ? 'O' : 'X';
         generateBoard();
@@ -84,10 +89,10 @@ const runGame = () => {
     gameData.nameX = res['Player X name: '];
     gameData.nameO = res['Player O name: '];
     console.log('\nLet\'s play!\n');
-    console.log('\nHere is the guide board: \n\n\n')
+    console.log('\nHere is the guide board: \n\n')
     generateBoard('guide');
+    console.log('\nAs you can see, the cells on the top row of the grid are numbered 1, 2, and 3\nthe middle are numbered 4, 5, and 6\nthe bottom row are numbered 7, 8, and 9\n===> use these numbers to select the position of your nex play token (e.g. "X" or "O"): \n\n\n')
     playerTurn(gameData.turn);
-    // guideBoard();
   })
 }
 
